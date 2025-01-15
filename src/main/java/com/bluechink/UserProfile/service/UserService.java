@@ -3,6 +3,7 @@ package com.bluechink.UserProfile.service;
 import com.bluechink.UserProfile.entity.User;
 import com.bluechink.UserProfile.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -13,10 +14,15 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     public User createUser(User user) {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email already exists: " + user.getEmail());
         }
+        user.setPassword(this.bCryptPasswordEncoder.encode(user.getPassword()));
+
         return userRepository.save(user);
     }
 
